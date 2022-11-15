@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Note from './components/Note'
 import Notification from './components/Notification'
 import Footer from './components/Footer'
-import noteService from './services/notes'
+import {notesGetAll,notesCreate,notesUpdate} from './services/notes'
 
 const App = () => {
   const [notes, setNotes] = useState([])
@@ -12,8 +12,7 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
-    noteService
-      .getAll()
+    notesGetAll()
       .then(initialNotes => {
         setNotes(initialNotes)
       })
@@ -28,8 +27,7 @@ const App = () => {
       id: notes.length + 1,
     }
 
-    noteService
-      .create(noteObject)
+    notesCreate(noteObject)
       .then(returnedNote => {
         setNotes(notes.concat(returnedNote))
         setNewNote('')
@@ -44,12 +42,12 @@ const App = () => {
     const note = notes.find(n => n.id === id)
     const changedNote = { ...note, important: !note.important }
   
-    noteService
-      .update(id, changedNote)
+    notesUpdate(id, changedNote)
       .then(returnedNote => {
         setNotes(notes.map(note => note.id !== id ? note : returnedNote))
       })
       .catch(error => {
+        console.log(error)
         setErrorMessage(
           `Note '${note.content}' was already removed from server`
         )
